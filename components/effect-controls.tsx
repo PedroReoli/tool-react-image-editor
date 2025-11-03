@@ -44,14 +44,14 @@ export function EffectControls({
   return (
     <Card className="p-6 space-y-6 h-fit sticky top-4">
       <div>
-        <h2 className="text-xl font-semibold mb-4">Effect Controls</h2>
-        <p className="text-sm text-muted-foreground">Adjust parameters and hover over the image to interact</p>
+        <h2 className="text-xl font-semibold mb-4">Controles de Efeito</h2>
+        <p className="text-sm text-muted-foreground">Ajuste os parâmetros e passe o mouse sobre a imagem para interagir</p>
       </div>
 
       <div className="space-y-4">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="halftone-size">Halftone Dot Size</Label>
+            <Label htmlFor="halftone-size">Tamanho dos Pontos</Label>
             <span className="text-sm text-muted-foreground">{halftoneSize}px</span>
           </div>
           <Slider
@@ -62,12 +62,12 @@ export function EffectControls({
             value={[halftoneSize]}
             onValueChange={([value]) => onHalftoneSizeChange(value)}
           />
-          <p className="text-xs text-muted-foreground">Controls the size of the halftone dots</p>
+          <p className="text-xs text-muted-foreground">Controla o tamanho dos pontos de meios-tons</p>
         </div>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="contrast">Contrast</Label>
+            <Label htmlFor="contrast">Contraste</Label>
             <span className="text-sm text-muted-foreground">{contrast.toFixed(1)}x</span>
           </div>
           <Slider
@@ -78,12 +78,12 @@ export function EffectControls({
             value={[contrast]}
             onValueChange={([value]) => onContrastChange(value)}
           />
-          <p className="text-xs text-muted-foreground">Adjusts the contrast before applying effects</p>
+          <p className="text-xs text-muted-foreground">Ajusta o contraste antes de aplicar os efeitos</p>
         </div>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="size-variation">Size Variation</Label>
+            <Label htmlFor="size-variation">Variação de Tamanho</Label>
             <span className="text-sm text-muted-foreground">{(sizeVariation * 100).toFixed(0)}%</span>
           </div>
           <Slider
@@ -94,12 +94,12 @@ export function EffectControls({
             value={[sizeVariation]}
             onValueChange={([value]) => onSizeVariationChange(value)}
           />
-          <p className="text-xs text-muted-foreground">Makes dots more heterogeneous and organic</p>
+          <p className="text-xs text-muted-foreground">Torna os pontos mais heterogêneos e orgânicos</p>
         </div>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="mouse-radius">Mouse Impact Radius</Label>
+            <Label htmlFor="mouse-radius">Raio de Impacto do Mouse</Label>
             <span className="text-sm text-muted-foreground">{mouseRadius}px</span>
           </div>
           <Slider
@@ -110,12 +110,12 @@ export function EffectControls({
             value={[mouseRadius]}
             onValueChange={([value]) => onMouseRadiusChange(value)}
           />
-          <p className="text-xs text-muted-foreground">Area of influence around the cursor</p>
+          <p className="text-xs text-muted-foreground">Área de influência ao redor do cursor</p>
         </div>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="repulsion-strength">Repulsion Strength</Label>
+            <Label htmlFor="repulsion-strength">Força de Repulsão</Label>
             <span className="text-sm text-muted-foreground">{repulsionStrength.toFixed(1)}x</span>
           </div>
           <Slider
@@ -126,12 +126,12 @@ export function EffectControls({
             value={[repulsionStrength]}
             onValueChange={([value]) => onRepulsionStrengthChange(value)}
           />
-          <p className="text-xs text-muted-foreground">How strongly dots are pushed by cursor movement</p>
+          <p className="text-xs text-muted-foreground">Quão forte os pontos são empurrados pelo movimento do cursor</p>
         </div>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="return-speed">Return Speed</Label>
+            <Label htmlFor="return-speed">Velocidade de Retorno</Label>
             <span className="text-sm text-muted-foreground">{(returnSpeed * 100).toFixed(0)}%</span>
           </div>
           <Slider
@@ -142,11 +142,11 @@ export function EffectControls({
             value={[returnSpeed]}
             onValueChange={([value]) => onReturnSpeedChange(value)}
           />
-          <p className="text-xs text-muted-foreground">How quickly dots return to original position</p>
+          <p className="text-xs text-muted-foreground">Quão rápido os pontos retornam à posição original</p>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="accent-color">Accent Color</Label>
+          <Label htmlFor="accent-color">Cor de Destaque</Label>
           <div className="flex gap-2 items-center">
             <input
               id="accent-color"
@@ -157,12 +157,12 @@ export function EffectControls({
             />
             <span className="text-sm text-muted-foreground font-mono">{accentColor}</span>
           </div>
-          <p className="text-xs text-muted-foreground">Random accent dots will use this color</p>
+          <p className="text-xs text-muted-foreground">Pontos de destaque aleatórios usarão esta cor</p>
         </div>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="accent-probability">Accent Probability</Label>
+            <Label htmlFor="accent-probability">Probabilidade de Destaque</Label>
             <span className="text-sm text-muted-foreground">{(accentProbability * 100).toFixed(0)}%</span>
           </div>
           <Slider
@@ -173,7 +173,7 @@ export function EffectControls({
             value={[accentProbability]}
             onValueChange={([value]) => onAccentProbabilityChange(value)}
           />
-          <p className="text-xs text-muted-foreground">Chance of dots being colored with accent</p>
+          <p className="text-xs text-muted-foreground">Chance dos pontos serem coloridos com destaque</p>
         </div>
       </div>
     </Card>

@@ -51,7 +51,27 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8">
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">Retro Shader Studio</h1>
-          <p className="text-muted-foreground">Apply interactive halftone effects to your images</p>
+          <p className="text-muted-foreground">Aplique efeitos interativos de meios-tons às suas imagens</p>
+          <p className="text-xs text-muted-foreground mt-4">
+            Feito por{" "}
+            <a
+              href="https://github.com/PedroReoli"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline text-accent"
+            >
+              Pedro Reoli
+            </a>
+            {" - "}
+            <a
+              href="https://pedroreoliwebdev-vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline text-accent"
+            >
+              Portfólio
+            </a>
+          </p>
         </header>
 
         <div className="grid lg:grid-cols-[1fr_400px] gap-6">
@@ -75,10 +95,10 @@ export default function Home() {
                 <div className="flex gap-2">
                   <Button onClick={handleDownload} className="gap-2">
                     <Download className="w-4 h-4" />
-                    Download Image
+                    Baixar Imagem
                   </Button>
                   <Button variant="outline" onClick={handleUploadNewImage}>
-                    Upload New Image
+                    Enviar Nova Imagem
                   </Button>
                   <input
                     ref={fileInputRef}

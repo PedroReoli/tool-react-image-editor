@@ -9,8 +9,9 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Retro Shader Studio",
-  description: "Apply halftone and scan line effects to your images",
+  description: "Aplique efeitos de meios-tons e linhas de varredura às suas imagens",
   generator: "v0.app",
+  authors: [{ name: "Pedro Reoli", url: "https://github.com/PedroReoli" }],
 }
 
 export default function RootLayout({
@@ -19,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body className={`font-sans antialiased`}>
         {children}
         <Analytics />

@@ -62,8 +62,8 @@ export function ImageUploader({ onImageUpload }: ImageUploaderProps) {
     >
       <label className="flex flex-col items-center justify-center min-h-[500px] cursor-pointer p-8">
         <Upload className="w-16 h-16 text-muted-foreground mb-4" />
-        <h3 className="text-xl font-semibold text-foreground mb-2">Upload an image</h3>
-        <p className="text-muted-foreground text-center mb-4">Drag and drop or click to select</p>
+        <h3 className="text-xl font-semibold text-foreground mb-2">Enviar uma imagem</h3>
+        <p className="text-muted-foreground text-center mb-4">Arraste e solte ou clique para selecionar</p>
         <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
       </label>
     </Card>
