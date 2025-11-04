@@ -3,6 +3,9 @@
 import { useEffect, forwardRef, useImperativeHandle, useRef, useState } from "react"
 import { Card } from "@/components/ui/card"
 import { smoothNoise } from "@/lib/noise"
+import { ImageFilters } from "@/lib/image-filters"
+import { ImageTransform, applyImageTransform } from "@/lib/image-transforms"
+import { applyImageFilters } from "@/lib/image-filters"
 
 interface ImageCanvasProps {
   image: HTMLImageElement
@@ -14,6 +17,8 @@ interface ImageCanvasProps {
   returnSpeed: number
   accentProbability: number
   sizeVariation: number
+  filters?: ImageFilters
+  transform?: ImageTransform
 }
 
 interface DotData {
@@ -50,6 +55,8 @@ export const ImageCanvas = forwardRef<HTMLCanvasElement, ImageCanvasProps>(
       returnSpeed,
       accentProbability,
       sizeVariation,
+      filters,
+      transform,
     },
     ref,
   ) => {
@@ -129,47 +136,64 @@ export const ImageCanvas = forwardRef<HTMLCanvasElement, ImageCanvasProps>(
       const ctx = canvas.getContext("2d", { willReadFrequently: true })
       if (!ctx) return
 
-      const MAX_WIDTH = 720 // Reduced from 1200 to 720 (40% reduction)
-      const MAX_HEIGHT = 480 // Reduced from 800 to 480 (40% reduction)
-
-      // Calculate scale to fit within both width and height constraints
-      const scaleX = MAX_WIDTH / image.width
-      const scaleY = MAX_HEIGHT / image.height
-      const scale = Math.min(1, scaleX, scaleY) // Use smallest scale to fit within both constraints
-
-      const dpr = window.devicePixelRatio || 1
-      const displayWidth = image.width * scale
-      const displayHeight = image.height * scale
-
-      canvas.width = displayWidth * dpr
-      canvas.height = displayHeight * dpr
-      // Set CSS size to display dimensions
-      canvas.style.width = `${displayWidth}px`
-      canvas.style.height = `${displayHeight}px`
-
-      // Scale context to work in display space
-      ctx.scale(dpr, dpr)
-      ctx.imageSmoothingEnabled = false
-
-      // Draw image in display space
-      ctx.drawImage(image, 0, 0, displayWidth, displayHeight)
-
-      // Get image data from the scaled canvas
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-      const data = imageData.data
-
-      for (let i = 0; i < data.length; i += 4) {
-        // Apply contrast with clamping to prevent extreme values
-        data[i] = Math.max(0, Math.min(255, ((data[i] / 255 - 0.5) * contrast + 0.5) * 255))
-        data[i + 1] = Math.max(0, Math.min(255, ((data[i + 1] / 255 - 0.5) * contrast + 0.5) * 255))
-        data[i + 2] = Math.max(0, Math.min(255, ((data[i + 2] / 255 - 0.5) * contrast + 0.5) * 255))
+      // Apply transformations first
+      let processedImage = image
+      if (transform) {
+        const transformCanvas = applyImageTransform(image, transform)
+        const transformedImg = new Image()
+        transformedImg.src = transformCanvas.toDataURL()
+        processedImage = transformedImg
       }
 
-      const dots: DotData[] = []
+      // Wait for transformed image to load if needed
+      const processImage = () => {
+        const MAX_WIDTH = 720
+        const MAX_HEIGHT = 480
 
-      const adjustedHalftoneSize = Math.max(2, halftoneSize * scale)
+        // Calculate scale to fit within both width and height constraints
+        const scaleX = MAX_WIDTH / processedImage.width
+        const scaleY = MAX_HEIGHT / processedImage.height
+        const scale = Math.min(1, scaleX, scaleY)
 
-      for (let y = 0; y < displayHeight; y += adjustedHalftoneSize) {
+        const dpr = window.devicePixelRatio || 1
+        const displayWidth = processedImage.width * scale
+        const displayHeight = processedImage.height * scale
+
+        canvas.width = displayWidth * dpr
+        canvas.height = displayHeight * dpr
+        canvas.style.width = `${displayWidth}px`
+        canvas.style.height = `${displayHeight}px`
+
+        ctx.scale(dpr, dpr)
+        ctx.imageSmoothingEnabled = false
+
+        // Draw image in display space
+        ctx.drawImage(processedImage, 0, 0, displayWidth, displayHeight)
+
+        // Get image data from the scaled canvas
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+
+        // Apply filters if provided
+        if (filters) {
+          imageData = applyImageFilters(imageData, filters)
+          ctx.putImageData(imageData, 0, 0)
+          imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+        }
+
+        const data = imageData.data
+
+        for (let i = 0; i < data.length; i += 4) {
+          // Apply contrast with clamping to prevent extreme values
+          data[i] = Math.max(0, Math.min(255, ((data[i] / 255 - 0.5) * contrast + 0.5) * 255))
+          data[i + 1] = Math.max(0, Math.min(255, ((data[i + 1] / 255 - 0.5) * contrast + 0.5) * 255))
+          data[i + 2] = Math.max(0, Math.min(255, ((data[i + 2] / 255 - 0.5) * contrast + 0.5) * 255))
+        }
+
+        const dots: DotData[] = []
+
+        const adjustedHalftoneSize = Math.max(2, halftoneSize * scale)
+
+        for (let y = 0; y < displayHeight; y += adjustedHalftoneSize) {
         for (let x = 0; x < displayWidth; x += adjustedHalftoneSize) {
           // Sample from the high-res canvas
           const sampleX = Math.floor(x * dpr)
@@ -201,12 +225,12 @@ export const ImageCanvas = forwardRef<HTMLCanvasElement, ImageCanvasProps>(
               vy: 0,
             })
           }
+          }
         }
-      }
 
-      dotsRef.current = dots
+        dotsRef.current = dots
 
-      const animate = () => {
+        const animate = () => {
         ctx.fillStyle = "#000000"
         ctx.fillRect(0, 0, displayWidth, displayHeight)
 
@@ -307,12 +331,25 @@ export const ImageCanvas = forwardRef<HTMLCanvasElement, ImageCanvasProps>(
         animationFrameRef.current = requestAnimationFrame(animate)
       }
 
-      animate()
+        animate()
+      }
 
+      // Handle transformed image loading and call processImage
+      if (transform) {
+        processedImage.onload = processImage
+        if (processedImage.complete) {
+          processImage()
+        }
+      } else {
+        processImage()
+      }
+
+      // Add event listeners
       canvas.addEventListener("mousemove", handleMouseMove)
       canvas.addEventListener("mouseenter", handleMouseEnter)
       canvas.addEventListener("mouseleave", handleMouseLeave)
 
+      // Cleanup function
       return () => {
         if (animationFrameRef.current) {
           cancelAnimationFrame(animationFrameRef.current)
@@ -332,6 +369,8 @@ export const ImageCanvas = forwardRef<HTMLCanvasElement, ImageCanvasProps>(
       accentProbability,
       sizeVariation,
       isHovering,
+      filters,
+      transform,
     ])
 
     return (
